@@ -20,6 +20,8 @@ def proof_of_work(block):
     while valid_proof(string_object, proof) is False:
         proof += 1
 
+    return proof
+
 
 def valid_proof(block_string, proof):
     """
@@ -32,7 +34,9 @@ def valid_proof(block_string, proof):
     correct number of leading zeroes.
     :return: True if the resulting hash is a valid proof, False otherwise
     """
-    pass
+    guess = f'{block_string}{proof}'.encode()
+    geuss_hash = hashlib.sha256(guess).hexdigest()
+    return geuss_hash[:6] == '000000'
 
 
 if __name__ == '__main__':
