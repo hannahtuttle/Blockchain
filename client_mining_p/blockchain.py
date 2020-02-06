@@ -136,10 +136,20 @@ blockchain = Blockchain()
 @app.route('/mine', methods=['POST'])
 def mine():
     data = request.get_json()
-    if data.proof is not None and data.id is not None:
+    print('*********data**********', data)
+    print('***********testing proof**************')
+    print(data['proof'])
+    print('*************************')
+    
+    if data['proof'] is not None and data['id'] is not None:
+
+        previous_hash = blockchain.hash(blockchain.last_block)
+        block = blockchain.new_block(data['proof'], previous_hash)
+        
         response = {
-            'message': 'sent proof and id'
+            'message': 'New Block Forged'
         }
+        
         return jsonify(response), 201
     else:
         response = {
@@ -162,6 +172,7 @@ def last_chain_block():
     response = {
         'last_block': blockchain.last_block
     }
+    return jsonify(response), 200
 
 
 # Run the program on port 5000

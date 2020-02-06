@@ -17,8 +17,10 @@ def proof_of_work(block):
 
     proof = 0
 
+    print('started')
     while valid_proof(string_object, proof) is False:
         proof += 1
+    print('finished')
 
     return proof
 
@@ -35,8 +37,8 @@ def valid_proof(block_string, proof):
     :return: True if the resulting hash is a valid proof, False otherwise
     """
     guess = f'{block_string}{proof}'.encode()
-    geuss_hash = hashlib.sha256(guess).hexdigest()
-    return geuss_hash[:6] == '000000'
+    guess_hash = hashlib.sha256(guess).hexdigest()
+    return guess_hash[:6] == '000000'
 
 
 if __name__ == '__main__':
@@ -65,15 +67,35 @@ if __name__ == '__main__':
             break
 
         # TODO: Get the block from `data` and use it to look for a new proof
-        # new_proof = ???
+        new_proof = proof_of_work(data)
+        print(new_proof)
 
         # When found, POST it to the server {"proof": new_proof, "id": id}
         post_data = {"proof": new_proof, "id": id}
 
         r = requests.post(url=node + "/mine", json=post_data)
         data = r.json()
+        print('****************data**************',data)
 
         # TODO: If the server responds with a 'message' 'New Block Forged'
+        total_coins = 0
+        if data == {'message':'New Block Forged'}:
         # add 1 to the number of coins mined and print it.  Otherwise,
+            total_coins += 1
+        else:
         # print the message from the server.
-        pass
+            print(data['message'])
+        
+        print('total coines mined',total_coins)
+
+        r = requests.get(url=node + "/chain")
+        # Handle non-json response
+        try:
+            data = r.json()
+            print('*****************testing chain*************', data)
+        except ValueError:
+            print("Error:  Non-json response")
+            print("Response returned:")
+            print(r)
+            break
+
